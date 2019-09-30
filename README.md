@@ -1,38 +1,5 @@
-# cmd-alias
-> A command line application with features like cmd alias with parameters, etc
-
-## Design:
-- The app is divided into different modules, each module is responsible for
-  performing a specific type of problem in this app
-
-### Levelized diagram:
-
-                  main
-                /  | \  \
-               /   |  \  \
-              \/   |   \  \
-        operations |   \/  \
-           /\      |   aka  \
-           |       \/        \
-           |---tokenparser    \
-                 |            \/
-                 |          utils
-                 |          /   \
-                 |         /     \
-                 |        \/     \/
-                 ----->aka_util   io
-
-- **main** : is the entry point of app
-- **operations** : Each possible operation that can be performed in this app is defined
-  here as enum
-- **tokenparser** : this is a parser, it takes token as input and returns the
-  operation that needs to be performed along with the operators also. (A token
-  is an input given on command line).
-- **aka** : aka stands for `Also Known As`, its the module which has actual
-  business logic in its method.
-- **utils** : this module containis a set of utility functions.
-- **utils/io** : conatins input/output related utility functions.
-- **utils/aka_util** : contains utility functions for `aka` module.
+#cmd-alias
+>> A command line application with features like cmd alias with parameters, etc
 
 ### The work is in progress
 

@@ -1,10 +1,9 @@
-package io
+package utils
 
 import (
 	"bufio"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 /*
@@ -46,7 +45,7 @@ func CreateFile(path string) error {
 // reads file and returns slice of string
 // TODO: what would happen if the file is very long?
 // would the slice of string be able to read all the content in one go?
-func ReadFile(name string, removeWhiteSpaces bool) ([]string, error) {
+func ReadFile(name string) ([]string, error) {
 	file, err := os.Open(name)
 	if err != nil {
 		file.Close()
@@ -55,13 +54,8 @@ func ReadFile(name string, removeWhiteSpaces bool) ([]string, error) {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	fileLines := []string{}
-	line := ""
 	for scanner.Scan() {
-		line = scanner.Text()
-		if removeWhiteSpaces {
-			line = removeExtraSpaces(line)
-		}
-		fileLines = append(fileLines, line)
+		fileLines = append(fileLines, scanner.Text())
 	}
 	return fileLines, nil
 }
@@ -89,10 +83,4 @@ func createFileUsingMkdir(filepath string) error {
 		return err
 	}
 	return nil
-}
-
-func removeExtraSpaces(token string) string {
-	token = strings.TrimSpace(token)
-	token = strings.TrimRight(token, "\n")
-	return token
 }
