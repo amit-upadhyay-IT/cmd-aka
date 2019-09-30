@@ -1,8 +1,9 @@
 package main
 
 import (
+	"../operations"
 	"../tokenparser"
-	"../utils"
+	"../utils/io"
 	"bytes"
 	"fmt"
 	"os"
@@ -10,6 +11,28 @@ import (
 )
 
 // create a hidden file at /home/username named .aku
+func setup() error {
+
+	// TODO: get file name from some config
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println("error while getting users homedir")
+		return err
+	}
+	var fullpath = usr.HomeDir + "/.aku"
+
+	if io.IsFilePresent(fullpath) {
+		// file is already present
+	} else {
+		// create a file with at the specified path
+		err := io.CreateFile(fullpath)
+		if err != nil {
+			fmt.Println("cannot create the file " + fullpath)
+			return err
+		}
+	}
+	return nil
+}
 
 func main() {
 
@@ -27,30 +50,27 @@ func main() {
 		}
 		tokens.WriteString(programArgs[len(programArgs)-1])
 	}
-	fmt.Println(tokens.String())
-	operation, operands := tokenparser.Parse(tokens.String())
-	fmt.Println(operation, operands)
+	var token string = tokens.String()
+	operation, operands := tokenparser.Parse(token)
+	performOperations(operation, operands)
 }
 
-func setup() error {
+func performOperations(operation operations.Operation, operands []string) {
 
-	// TODO: get file name from some config
-	usr, err := user.Current()
-	if err != nil {
-		fmt.Println("error while getting users homedir")
-		return err
-	}
-	var fullpath = usr.HomeDir + "/.aku"
+	// create instance of alias
+	alias := GetAka()
+	alias.dummyMethod()
 
-	if utils.IsFilePresent(fullpath) {
-		// file is already present
-	} else {
-		// create a file with at the specified path
-		err := utils.CreateFile(fullpath)
-		if err != nil {
-			fmt.Println("cannot create the file " + fullpath)
-			return err
-		}
+	switch operation {
+	case operations.ALIAS:
+		fmt.Println("ALIAS is to be performed")
+		fmt.Println(operation, operands)
+		// some operation
+	case operations.ALIAS_U:
+		// some operations
+	default:
+		fmt.Println("not implemented yet")
+		// or better throw error/ panic the program here
 	}
-	return nil
+
 }

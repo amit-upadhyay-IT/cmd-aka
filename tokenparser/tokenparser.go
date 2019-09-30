@@ -2,6 +2,7 @@ package tokenparser
 
 import (
 	"../operations"
+	"../utils/app"
 	"fmt"
 	"strings"
 )
@@ -32,18 +33,18 @@ func Parse(token string) (operations.Operation, []string) {
 }
 
 // validation tokens and returns the operation to be performed
-// Performs: valdate keyword, get operation to perform, validate arguments
+// Performs: validate keyword, get operation to perform, validate arguments
 // passed to perform operations
 func validateToken(token string) (operations.Operation, string) {
 	errorMessage := ""
 	success := true
 
-	tokenSlice := strings.Split(token, " ")
+	tokenSlice := strings.Split(token, ",")
 	keyword := tokenSlice[0]
 	success = isValidKeyword(keyword)
 	if !success {
 		// return retry operation
-		errorMessage = "Wrong keyword found! Retry again with correct keyword."
+		errorMessage = "Wrong input found! Retry again with correct input."
 		return operations.RETRY, errorMessage
 	}
 	op := getOperationToPerform(keyword)
@@ -51,14 +52,12 @@ func validateToken(token string) (operations.Operation, string) {
 	success = isValidArgument(argsSlice, op)
 	if !success {
 		// return retry operation
-		errorMessage = "Arguments to the opreation " + string(op) + " is wrong"
+		errorMessage = "Arguments to the operation " + string(op) + " is wrong"
 		return operations.RETRY, errorMessage
 	}
 	return op, errorMessage
 }
 
-// with very simple validations, TODO, we can also validate based on colors,
-// regex for registraion num, etc
 func isValidArgument(args []string, op operations.Operation) bool {
 
 	success := true
@@ -71,17 +70,21 @@ func isValidArgument(args []string, op operations.Operation) bool {
 }
 
 func isValidKeyword(keyword string) bool {
-	switch keyword {
-	case string(operations.ALIAS):
-		return true
-	case string(operations.ALIAS_P):
-		return true
-	case string(operations.EXIT):
-		return true
-		// TODO: implement for other cases aswell
-	default:
-		return false
+	// iterate over the values of enum
+	// TODO: currently, I am validating true even when `$ aka p` is entered, which is false case
+	// TODO: below comparision is wrong coz, I am comparing var name with value, fix it
+	for _, val := range operations.GetOperations() {
+		if val == keyword {
+			return true
+		}
 	}
+	// check if the command entered is request to read from .aka file and perform some operation
+	for _, val := range app.GetAkaKeys() {
+		if val == keyword {
+			return true
+		}
+	}
+	return false
 }
 
 func getOperationToPerform(keyword string) operations.Operation {
@@ -90,10 +93,14 @@ func getOperationToPerform(keyword string) operations.Operation {
 		return operations.ALIAS
 	case string(operations.ALIAS_P):
 		return operations.ALIAS_P
+	case string(operations.ALIAS_D):
+		return operations.ALIAS_D
+	case string(operations.ALIAS_U):
+		return operations.ALIAS_U
 	case string(operations.STATUS):
 		return operations.STATUS
-	case string(operations.EXIT):
-		return operations.EXIT
+	case string(operations.HELP):
+		return operations.HELP
 	default:
 		return operations.RETRY
 	}
@@ -103,8 +110,4 @@ func removeExtraSpaces(token string) string {
 	token = strings.TrimSpace(token)
 	token = strings.TrimRight(token, "\n")
 	return token
-}
-
-func IsExitCommand(input string) bool {
-	return strings.EqualFold(strings.TrimRight(input, "\n"), "exit")
 }

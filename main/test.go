@@ -1,12 +1,11 @@
 package main
 
 import (
+	"../operations"
 	"fmt"
-	"os/user"
 )
 
 func main() {
-	us, _ := user.Current()
-	fmt.Println(us.HomeDir)
-	fmt.Printf("%T %v", us, us)
+	m := operations.GetOperations()
+	fmt.Println(m)
 }
